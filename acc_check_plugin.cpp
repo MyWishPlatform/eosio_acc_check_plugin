@@ -20,27 +20,27 @@ namespace eosio {
 			{"/v1/chain-ext/get_accounts", [api](std::string url, std::string body, url_response_callback callback) {
 				try {
 					if (body.empty()) body = "{}";
+					std::vector<fc::variant> results;
 					fc::variant var = fc::json::from_string(body).get_object();
 					bool verbose = var["verbose"].as_bool();
 					auto accounts = var["accounts"].get_array();
-					if (verbose) {
-						std::vector<eosio::chain_apis::read_only::get_account_results> results;
-						for (auto it = accounts.begin(); it != accounts.end(); it++) {
-							results.push_back(api.get_account(chain_apis::read_only::get_account_params{it->as_string()}));
-						}
-						callback(200, fc::json::to_string(results));
-					} else {
-						std::vector<bool> results;
-						for (auto it = accounts.begin(); it != accounts.end(); it++) {
-							try {
-								api.get_account(chain_apis::read_only::get_account_params{it->as_string()});
-								results.push_back(true);
-							} catch (...) {
-								results.push_back(false);
+					for (auto it = accounts.begin(); it != accounts.end(); it++) {
+						try {
+							auto info = api.get_account(chain_apis::read_only::get_account_params{it->as_string()});
+							if (verbose) {
+								results.push_back(fc::variant(info));
+							} else {
+								results.push_back(fc::variant(true));
+							}
+						} catch (...) {
+							if (verbose) {
+								results.push_back(fc::variant());
+							} else {
+								results.push_back(fc::variant(false));
 							}
 						}
-						callback(200, fc::json::to_string(results));
 					}
+					callback(200, fc::json::to_string(results));
 				} catch (...) {
 					http_plugin::handle_exception("chain-ext", "get_accounts", body, callback);
 				}
