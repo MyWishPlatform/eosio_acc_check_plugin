@@ -19,7 +19,7 @@ namespace eosio {
 		app().get_plugin<http_plugin>().add_api({
 			{"/v1/chain-ext/get_accounts", [api](std::string url, std::string body, url_response_callback callback) {
 				try {
-             		if (body.empty()) body = "{}";
+					if (body.empty()) body = "{}";
 					fc::variant var = fc::json::from_string(body);
 					fc::variant_object var_obj = var.get_object();
 					fc::variant verbose = var_obj["verbose"];
