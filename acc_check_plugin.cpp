@@ -27,14 +27,14 @@ namespace eosio {
 					if (verbose.as_bool()) {
 						std::vector<eosio::chain_apis::read_only::get_account_results> results;
 						for (auto it = accounts.begin(); it != accounts.end(); it++) {
-							results.push_back(api.get_account(chain_apis::read_only::get_account_params{(*it).as_string()}));
+							results.push_back(api.get_account(chain_apis::read_only::get_account_params{it->as_string()}));
 						}
 						callback(200, fc::json::to_string(results));
 					} else {
 						std::vector<bool> results;
 						for (auto it = accounts.begin(); it != accounts.end(); it++) {
 							try {
-								api.get_account(chain_apis::read_only::get_account_params{(*it).as_string()});
+								api.get_account(chain_apis::read_only::get_account_params{it->as_string()});
 								results.push_back(true);
 							} catch (...) {
 								results.push_back(false);
