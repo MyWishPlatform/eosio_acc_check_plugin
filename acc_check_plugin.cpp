@@ -20,11 +20,10 @@ namespace eosio {
 			{"/v1/chain-ext/get_accounts", [api](std::string url, std::string body, url_response_callback callback) {
 				try {
 					if (body.empty()) body = "{}";
-					fc::variant var = fc::json::from_string(body);
-					fc::variant_object var_obj = var.get_object();
-					fc::variant verbose = var_obj["verbose"];
-					auto accounts = var_obj["accounts"].get_array();
-					if (verbose.as_bool()) {
+					fc::variant var = fc::json::from_string(body).get_object();
+					bool verbose = var["verbose"].as_bool();
+					auto accounts = var["accounts"].get_array();
+					if (verbose) {
 						std::vector<eosio::chain_apis::read_only::get_account_results> results;
 						for (auto it = accounts.begin(); it != accounts.end(); it++) {
 							results.push_back(api.get_account(chain_apis::read_only::get_account_params{it->as_string()}));
