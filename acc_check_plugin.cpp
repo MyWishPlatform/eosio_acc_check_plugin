@@ -15,10 +15,10 @@ namespace eosio {
 
 	void acc_check_plugin::plugin_startup() {
 		ilog("starting acc_check_plugin");
-		auto api = app().get_plugin<chain_plugin>().get_read_only_api();
 		app().get_plugin<http_plugin>().add_api({
-			{"/v1/chain-ext/get_accounts", [api](std::string url, std::string body, url_response_callback callback) {
+			{"/v1/chain-ext/get_accounts", [&](std::string url, std::string body, url_response_callback callback) {
 				try {
+					auto api = app().get_plugin<chain_plugin>().get_read_only_api();
 					if (body.empty()) body = "{}";
 					std::vector<fc::variant> results;
 					fc::variant var = fc::json::from_string(body).get_object();
